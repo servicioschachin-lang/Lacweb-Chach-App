@@ -10,13 +10,13 @@ export const CONFIG = {
   TEMPLATES: [
 { nombre: 'Plantilla 01', url: 'plantillas/01_glassmorphism_landing.html' },
     { nombre: 'Plantilla 02', url: 'plantillas/04_neumorphism_multipage.html' },
-    { nombre: 'Plantilla 03', url: 'plantillas/09_minimalism_landing.html' },
-    { nombre: 'Plantilla 04', url: 'plantillas/08_brutalism_multipage.html' },
+    { nombre: 'Plantilla 03', url: 'plantillas/09_minimalismo_landing.html' },
+    { nombre: 'Plantilla 04', url: 'plantillas/08_brutalismo_multipage.html' },
     { nombre: 'Plantilla 05', url: 'plantillas/06_claymorphism_multipage.html' },
     { nombre: 'Plantilla 06', url: 'plantillas/02_glassmorphism_multipage.html' },
     { nombre: 'Plantilla 07', url: 'plantillas/03_neumorphism_landing.html' },
-    { nombre: 'Plantilla 08', url: 'plantillas/10_minimalism_multipage.html' },
-    { nombre: 'Plantilla 09', url: 'plantillas/07_brutalism_landing.html' },
+    { nombre: 'Plantilla 08', url: 'plantillas/10_minimalismo_multipage.html' },
+    { nombre: 'Plantilla 09', url: 'plantillas/07_brutalismo_landing.html' },
     { nombre: 'Plantilla 10', url: 'plantillas/05_claymorphism_landing.html' },
   ]
 };
