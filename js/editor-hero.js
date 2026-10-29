@@ -31,10 +31,46 @@ export function applyHeroEditing(editor) {
   editor.replaceHeroBackground = function(doc) {
     const hero = this.detectHeroContainer(doc);
     if (!hero) {
-      alert('No se encontró una sección hero con imagen de fondo.');
+      alert('No se encontró una sección hero.');
       return;
     }
 
+    // Si el hero usa una imagen <img> (caso de las plantillas), reemplazar su src
+    const img = hero.querySelector('img.himg, img');
+    if (img) {
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.accept = 'image/*';
+      inp.onchange = () => {
+        const f = inp.files[0];
+        if (!f) return;
+        const rd = new FileReader();
+        rd.onload = () => {
+          const im = new Image();
+          im.onload = () => {
+            const M = 1600;
+            const k = Math.min(1, M / Math.max(im.width, im.height));
+            const c = document.createElement('canvas');
+            c.width = Math.round(im.width * k);
+            c.height = Math.round(im.height * k);
+            c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+            const data = f.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
+            img.src = data;
+            img.removeAttribute('srcset');
+            img.removeAttribute('sizes');
+            $('#edEstado').textContent = 'Cambios sin guardar';
+            this.schedulePush();
+            if (this.onChange) this.onChange();
+          };
+          im.src = rd.result;
+        };
+        rd.readAsDataURL(f);
+      };
+      inp.click();
+      return;
+    }
+
+    // Fallback: sección con background-image CSS
     const inp = document.createElement('input');
     inp.type = 'file';
     inp.accept = 'image/*';
@@ -51,14 +87,12 @@ export function applyHeroEditing(editor) {
           c.width = Math.round(im.width * k);
           c.height = Math.round(im.height * k);
           c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          const data =
-            f.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
+          const data = f.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
           hero.style.backgroundImage = `url(${data})`;
           if (!hero.style.backgroundSize) hero.style.backgroundSize = 'cover';
           if (!hero.style.backgroundPosition) hero.style.backgroundPosition = 'center';
           if (!hero.style.backgroundRepeat) hero.style.backgroundRepeat = 'no-repeat';
           hero.setAttribute('data-cw-bg-img', '1');
-          hero.setAttribute('data-cw-hero-bg', '1');
           $('#edEstado').textContent = 'Cambios sin guardar';
           this.schedulePush();
           if (this.onChange) this.onChange();
