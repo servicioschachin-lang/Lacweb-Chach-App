@@ -35,8 +35,22 @@ export function applyHeroEditing(editor) {
       return;
     }
 
-    // Si el hero usa una imagen <img> (caso de las plantillas), reemplazar su src
+    // Preferir un elemento con background-image dentro del hero (ej. .hero-bg)
+    let bgTarget = hero.querySelector('[data-cw-bg-img]');
+    if (!bgTarget) {
+      for (const el of hero.querySelectorAll('*')) {
+        const bg = el.style.backgroundImage || (doc.defaultView.getComputedStyle(el).backgroundImage || '');
+        if (bg && bg !== 'none' && bg.includes('url(')) { bgTarget = el; break; }
+      }
+    }
+
     const img = hero.querySelector('img.himg, img');
+
+    if (bgTarget) {
+      this.replaceBackgroundImage(bgTarget);
+      return;
+    }
+
     if (img) {
       const inp = document.createElement('input');
       inp.type = 'file';
@@ -70,38 +84,7 @@ export function applyHeroEditing(editor) {
       return;
     }
 
-    // Fallback: sección con background-image CSS
-    const inp = document.createElement('input');
-    inp.type = 'file';
-    inp.accept = 'image/*';
-    inp.onchange = () => {
-      const f = inp.files[0];
-      if (!f) return;
-      const rd = new FileReader();
-      rd.onload = () => {
-        const im = new Image();
-        im.onload = () => {
-          const M = 1600;
-          const k = Math.min(1, M / Math.max(im.width, im.height));
-          const c = document.createElement('canvas');
-          c.width = Math.round(im.width * k);
-          c.height = Math.round(im.height * k);
-          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          const data = f.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
-          hero.style.backgroundImage = `url(${data})`;
-          if (!hero.style.backgroundSize) hero.style.backgroundSize = 'cover';
-          if (!hero.style.backgroundPosition) hero.style.backgroundPosition = 'center';
-          if (!hero.style.backgroundRepeat) hero.style.backgroundRepeat = 'no-repeat';
-          hero.setAttribute('data-cw-bg-img', '1');
-          $('#edEstado').textContent = 'Cambios sin guardar';
-          this.schedulePush();
-          if (this.onChange) this.onChange();
-        };
-        im.src = rd.result;
-      };
-      rd.readAsDataURL(f);
-    };
-    inp.click();
+    this.replaceBackgroundImage(hero);
   };
 
   editor.setupHeroButton = function() {
